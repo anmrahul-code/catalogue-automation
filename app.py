@@ -29,6 +29,7 @@ dropdown_file = f"config/{marketplace}_dropdown.xlsx"
 # Load Categories
 # =========================
 try:
+
     instruction_excel = pd.ExcelFile(instruction_file)
 
     categories = [
@@ -47,7 +48,7 @@ selected_category = st.selectbox(
 )
 
 # =========================
-# Generate Button
+# Generate Template
 # =========================
 if st.button("Generate Template"):
 
@@ -74,7 +75,7 @@ if st.button("Generate Template"):
         )
 
         # =====================
-        # Load Instruction Sheet
+        # Load Mapping Sheet
         # =====================
         sheet_name = f"Mapping-{selected_category}"
 
@@ -91,10 +92,12 @@ if st.button("Generate Template"):
         dropdown_frames = []
 
         for sheet in dropdown_excel.sheet_names:
+
             temp = pd.read_excel(
                 dropdown_file,
                 sheet_name=sheet
             )
+
             dropdown_frames.append(temp)
 
         dropdown_data = pd.concat(
@@ -107,34 +110,33 @@ if st.button("Generate Template"):
         )
 
         # =====================
-        # Build Mapping Dictionary
+        # Create Dropdown Dictionary
         # =====================
         dropdown_dict = {}
 
-        for _, row in dropdown_data.iterrows():
+        required_columns = [
+            "Attribute",
+            "Base Value",
+            "Mapped Value",
+            "Final Category"
+        ]
 
-            try:
+        if all(col in dropdown_data.columns for col in required_columns):
 
-                category = str(
-                    row["Final Category"]
-                ).strip().upper()
+            for _, row in dropdown_data.iterrows():
 
-                attribute = str(
-                    row["Attribute"]
-                ).strip()
+                try:
 
-                base_value = str(
-                    row["Base Value"]
-                ).strip().lower()
+                    key = (
+                        str(row["Final Category"]).strip().upper(),
+                        str(row["Attribute"]).strip(),
+                        str(row["Base Value"]).strip().lower()
+                    )
 
-                mapped_value = row["Mapped Value"]
+                    dropdown_dict[key] = row["Mapped Value"]
 
-                dropdown_dict[
-                    (category, attribute, base_value)
-                ] = mapped_value
-
-            except:
-                pass
+                except:
+                    pass
 
         # =====================
         # Filter Category
@@ -143,6 +145,25 @@ if st.button("Generate Template"):
             master_df["Final Category"]
             == selected_category.upper()
         ].copy()
+
+        # =====================
+        # Detect Template Column
+        # =====================
+        template_column = None
+
+        possible_columns = [
+            f"{marketplace} Template Column",
+            "Myntra Template Column"
+        ]
+
+        for col in possible_columns:
+            if col in instruction_df.columns:
+                template_column = col
+                break
+
+        if template_column is None:
+            st.error("Template column not found in instruction file")
+            st.stop()
 
         # =====================
         # Generate Output
@@ -156,38 +177,37 @@ if st.button("Generate Template"):
             ).strip()
 
             output_col = str(
-                row["Myntra Template Column"]
+                row[template_column]
             ).strip()
+
+            if output_col == "" or output_col.lower() == "nan":
+                continue
 
             if base_col in category_df.columns:
 
-                data = category_df[base_col].apply(
-                    lambda x: ""
-                    if pd.isna(x)
-                    else str(x).strip()
-                )
+                values = category_df[base_col].fillna("").astype(str)
 
-                mapped_data = []
+                mapped_values = []
 
-                for val in data:
+                for val in values:
 
                     key = (
                         selected_category.upper(),
                         output_col,
-                        str(val).lower()
+                        str(val).strip().lower()
                     )
 
-                    mapped_data.append(
+                    mapped_values.append(
                         dropdown_dict.get(key, val)
                     )
 
-                output_df[output_col] = mapped_data
+                output_df[output_col] = mapped_values
 
             else:
                 output_df[output_col] = ""
 
         # =====================
-        # Create Excel Download
+        # Create Excel File
         # =====================
         output = io.BytesIO()
 
@@ -206,11 +226,11 @@ if st.button("Generate Template"):
         st.success("Template Generated Successfully")
 
         st.download_button(
-    label="⬇ Download Template",
-    data=output,
-    file_name=f"{selected_marketplace}_{selected_category}_Template_Filled.xlsx",
-    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-)
+            label="⬇ Download Template",
+            data=output,
+            file_name=f"{marketplace}_{selected_category}_Template_Filled.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
     except Exception as e:
         st.error(f"Error: {str(e)}")
