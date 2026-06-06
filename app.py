@@ -27,18 +27,26 @@ dropdown_file = st.file_uploader(
 if master_file and instruction_file and dropdown_file:
 
     try:
+
+        # ==========================
+        # LOAD MASTER FILE
+        # ==========================
         master_df = pd.read_excel(master_file)
 
         if "Final Category" not in master_df.columns:
             st.error("Final Category column not found in Master File")
             st.stop()
 
-        categories = sorted(
+        master_df["Final Category"] = (
             master_df["Final Category"]
-            .dropna()
             .astype(str)
             .str.strip()
             .str.upper()
+        )
+
+        categories = sorted(
+            master_df["Final Category"]
+            .dropna()
             .unique()
         )
 
@@ -49,15 +57,10 @@ if master_file and instruction_file and dropdown_file:
 
         if st.button("Generate Template"):
 
-            master_df["Final Category"] = (
-                master_df["Final Category"]
-                .astype(str)
-                .str.strip()
-                .str.upper()
-            )
-
+            # ==========================
+            # LOAD INSTRUCTION FILE
+            # ==========================
             instruction_excel = pd.ExcelFile(instruction_file)
-            dropdown_excel = pd.ExcelFile(dropdown_file)
 
             instruction_data = {
                 sheet: pd.read_excel(
@@ -67,8 +70,51 @@ if master_file and instruction_file and dropdown_file:
                 for sheet in instruction_excel.sheet_names
             }
 
+            # ==========================
+            # FIND CORRECT MAPPING SHEET
+            # ==========================
+            sheet_name = None
+
+            for sheet in instruction_data.keys():
+
+                sheet_category = (
+                    sheet.replace("Mapping-", "")
+                    .strip()
+                    .upper()
+                )
+
+                if sheet_category == selected_category:
+                    sheet_name = sheet
+                    break
+
+            if sheet_name is None:
+
+                st.error(
+                    f"No Mapping Sheet Found For {selected_category}"
+                )
+
+                st.write("Available Mapping Sheets:")
+
+                st.write(
+                    list(instruction_data.keys())
+                )
+
+                st.stop()
+
+            instruction_df = instruction_data[sheet_name]
+
+            # ==========================
+            # LOAD DROPDOWN FILE
+            # ==========================
+            dropdown_excel = pd.ExcelFile(dropdown_file)
+
             def clean_dropdown_sheet(df):
-                df.columns = df.columns.str.strip()
+
+                df.columns = (
+                    df.columns
+                    .astype(str)
+                    .str.strip()
+                )
 
                 rename_map = {
                     "Attribute Name of Out Put File": "Attribute",
@@ -80,57 +126,61 @@ if master_file and instruction_file and dropdown_file:
 
                 return df.rename(columns=rename_map)
 
+            dropdown_frames = []
+
+            for sheet in dropdown_excel.sheet_names:
+
+                temp_df = pd.read_excel(
+                    dropdown_file,
+                    sheet_name=sheet
+                )
+
+                temp_df = clean_dropdown_sheet(temp_df)
+
+                dropdown_frames.append(temp_df)
+
             dropdown_data = pd.concat(
-                [
-                    clean_dropdown_sheet(
-                        pd.read_excel(
-                            dropdown_file,
-                            sheet_name=sheet
-                        )
-                    )
-                    for sheet in dropdown_excel.sheet_names
-                ],
+                dropdown_frames,
                 ignore_index=True
             )
 
+            # ==========================
+            # BUILD DROPDOWN DICTIONARY
+            # ==========================
             dropdown_dict = {}
 
             for _, row in dropdown_data.iterrows():
 
                 try:
-                    key = (
-                        str(row["Final Category"]).strip().upper(),
-                        str(row["Attribute"]).strip(),
-                        str(row["Base"]).strip().lower()
-                    )
 
-                    dropdown_dict[key] = row["Mapped"]
+                    final_category = str(
+                        row["Final Category"]
+                    ).strip().upper()
+
+                    attribute = str(
+                        row["Attribute"]
+                    ).strip()
+
+                    base_value = str(
+                        row["Base"]
+                    ).strip().lower()
+
+                    mapped_value = row["Mapped"]
+
+                    dropdown_dict[
+                        (
+                            final_category,
+                            attribute,
+                            base_value
+                        )
+                    ] = mapped_value
 
                 except:
                     pass
 
-            sheet_name = f"Mapping-{selected_category}
-
-sheet_name = None
-
-for s in instruction_data.keys():
-    if s.replace("Mapping-", "").strip().upper() == selected_category.strip().upper():
-        sheet_name = s
-        break
-
-if sheet_name is None:
-    st.error(
-        f"Mapping sheet not found for category: {selected_category}"
-    )
-    st.stop()
-            if sheet_name not in instruction_data:
-                st.error(
-                    f"{sheet_name} sheet not found in Instruction File"
-                )
-                st.stop()
-
-            instruction_df = instruction_data[sheet_name]
-
+            # ==========================
+            # FILTER CATEGORY
+            # ==========================
             cat_df = master_df[
                 master_df["Final Category"]
                 == selected_category
@@ -138,42 +188,66 @@ if sheet_name is None:
 
             output_df = pd.DataFrame()
 
+            # ==========================
+            # GENERATE OUTPUT
+            # ==========================
             for _, row in instruction_df.iterrows():
 
-                base_col = row["Base file Column"]
-                out_col = row["Myntra Template Column"]
+                try:
 
-                if base_col in cat_df.columns:
+                    base_col = str(
+                        row["Base file Column"]
+                    ).strip()
 
-                    col_data = cat_df[base_col].apply(
-                        lambda x: ""
-                        if pd.isna(x)
-                        else str(x).strip()
-                    )
+                    out_col = str(
+                        row["Myntra Template Column"]
+                    ).strip()
 
-                    col_data = col_data.apply(
-                        lambda val:
-                        dropdown_dict.get(
-                            (
-                                selected_category,
-                                out_col,
-                                val.lower()
-                            ),
-                            val
+                    if (
+                        base_col
+                        and base_col in cat_df.columns
+                    ):
+
+                        col_data = cat_df[
+                            base_col
+                        ].apply(
+                            lambda x:
+                            ""
+                            if pd.isna(x)
+                            else str(x).strip()
                         )
-                    )
 
-                    output_df[out_col] = col_data
+                        col_data = col_data.apply(
+                            lambda val:
+                            dropdown_dict.get(
+                                (
+                                    selected_category,
+                                    out_col,
+                                    val.lower()
+                                ),
+                                val
+                            )
+                        )
 
-                else:
-                    output_df[out_col] = ""
+                        output_df[out_col] = col_data
 
+                    else:
+
+                        output_df[out_col] = ""
+
+                except:
+                    pass
+
+            # ==========================
+            # CREATE EXCEL FILE
+            # ==========================
             output = BytesIO()
 
             with pd.ExcelWriter(
                 output,
                 engine="openpyxl"
             ) as writer:
+
                 output_df.to_excel(
                     writer,
                     index=False
@@ -185,6 +259,10 @@ if sheet_name is None:
                 f"{selected_category} Template Generated Successfully"
             )
 
+            st.write(
+                f"Rows Generated: {len(output_df)}"
+            )
+
             st.download_button(
                 label="📥 Download Excel",
                 data=output,
@@ -193,4 +271,7 @@ if sheet_name is None:
             )
 
     except Exception as e:
-        st.error(str(e))
+
+        st.error("Error Found")
+
+        st.code(str(e))
