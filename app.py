@@ -138,51 +138,41 @@ if st.button("Generate Template"):
                 except:
                     pass
 
-       # =====================
-# Filter Category
-# =====================
+        # =====================
+        # Filter Category
+        # =====================
+        if marketplace == "Flipkart" and "Gender" in master_df.columns:
 
-if marketplace == "Flipkart":
+    gender_series = (
+        master_df["Gender"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
 
-    if "Gender" in master_df.columns:
+    # Adult Tshirts
+    if selected_category == "Tshirts":
 
-        gender_series = (
-            master_df["Gender"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
-        )
-
-        # Flipkart Adult Tshirts
-        if selected_category == "Tshirts":
-
-            category_df = master_df[
-                (master_df["Final Category"] == "TSHIRTS") &
-                (
-                    gender_series.isin(
-                        ["MEN", "WOMEN"]
-                    )
+        category_df = master_df[
+            (master_df["Final Category"] == "TSHIRTS") &
+            (
+                gender_series.isin(
+                    ["MEN", "WOMEN"]
                 )
-            ].copy()
+            )
+        ].copy()
 
-        # Flipkart Kids Tshirts
-        elif selected_category == "Kids T-shirt":
+    # Kids Tshirts
+    elif selected_category == "Kids T-shirt":
 
-            category_df = master_df[
-                (master_df["Final Category"] == "TSHIRTS") &
-                (
-                    gender_series.isin(
-                        ["BOYS", "GIRLS"]
-                    )
+        category_df = master_df[
+            (master_df["Final Category"] == "TSHIRTS") &
+            (
+                gender_series.isin(
+                    ["BOYS", "GIRLS"]
                 )
-            ].copy()
-
-        else:
-
-            category_df = master_df[
-                master_df["Final Category"]
-                == selected_category.upper()
-            ].copy()
+            )
+        ].copy()
 
     else:
 
@@ -193,7 +183,6 @@ if marketplace == "Flipkart":
 
 else:
 
-    # Myntra & Ajio
     category_df = master_df[
         master_df["Final Category"]
         == selected_category.upper()
