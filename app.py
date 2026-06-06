@@ -138,13 +138,28 @@ if st.button("Generate Template"):
                 except:
                     pass
 
-        # =====================
+              # =====================
         # Filter Category
         # =====================
-        category_df = master_df[
-            master_df["Final Category"]
-            == selected_category.upper()
-        ].copy()
+
+        if marketplace == "Flipkart" and selected_category == "Kids T-shirt":
+
+            category_df = master_df[
+                (master_df["Final Category"].str.upper() == "T-SHIRT") &
+                (
+                    master_df["Gender"]
+                    .astype(str)
+                    .str.upper()
+                    .isin(["BOYS", "GIRLS"])
+                )
+            ].copy()
+
+        else:
+
+            category_df = master_df[
+                master_df["Final Category"]
+                == selected_category.upper()
+            ].copy()
 
         # =====================
         # Detect Template Column
