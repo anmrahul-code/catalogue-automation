@@ -151,9 +151,7 @@ if st.button("Generate Template"):
     )
 
     # Adult Tshirts
-    if selected_category == "Tshirts":
-
-        category_df = master_df[
+    if selected_category == "Tshirts":category_df = master_df[
             (master_df["Final Category"] == "TSHIRTS") &
             (
                 gender_series.isin(
