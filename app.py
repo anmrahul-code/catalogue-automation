@@ -143,8 +143,7 @@ if st.button("Generate Template"):
         # =====================
          if (marketplace == "Flipkart"and "Gender" in master_df.columns):
 
-            gender_series = (
-                master_df["Gender"]
+            gender_series = (master_df["Gender"]
                 .astype(str)
                 .str.strip()
                 .str.upper()
