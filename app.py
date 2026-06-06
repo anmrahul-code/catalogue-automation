@@ -138,56 +138,55 @@ if st.button("Generate Template"):
                 except:
                     pass
 
+            # =====================
+        # Filter Category
         # =====================
-# Filter Category
-# =====================
 
-if marketplace == "Flipkart":
+        if marketplace == "Flipkart":
 
-    gender_series = (
-        master_df["Gender"]
-        .astype(str)
-        .str.strip()
-        .str.upper()
-    )
+            if "Gender" in master_df.columns:
 
-    # Adult Tshirts
-    if selected_category == "Tshirts":
-
-        category_df = master_df[
-            (master_df["Final Category"] == "TSHIRTS") &
-            (
-                gender_series.isin(
-                    ["MEN", "WOMEN"]
+                gender_series = (
+                    master_df["Gender"]
+                    .astype(str)
+                    .str.strip()
+                    .str.upper()
                 )
-            )
-        ].copy()
 
-    # Kids Tshirts
-    elif selected_category == "KidsTshirts":
+                if selected_category == "Tshirts":
 
-        category_df = master_df[
-            (master_df["Final Category"] == "TSHIRTS") &
-            (
-                gender_series.isin(
-                    ["BOYS", "GIRLS"]
-                )
-            )
-        ].copy()
+                    category_df = master_df[
+                        (master_df["Final Category"] == "TSHIRTS") &
+                        (gender_series.isin(["MEN", "WOMEN"]))
+                    ].copy()
 
-    else:
+                elif selected_category == "KidsTshirts":
 
-        category_df = master_df[
-            master_df["Final Category"]
-            == selected_category.upper()
-        ].copy()
+                    category_df = master_df[
+                        (master_df["Final Category"] == "TSHIRTS") &
+                        (gender_series.isin(["BOYS", "GIRLS"]))
+                    ].copy()
 
-else:
+                else:
 
-    category_df = master_df[
-        master_df["Final Category"]
-        == selected_category.upper()
-    ].copy()
+                    category_df = master_df[
+                        master_df["Final Category"]
+                        == selected_category.upper()
+                    ].copy()
+
+            else:
+
+                category_df = master_df[
+                    master_df["Final Category"]
+                    == selected_category.upper()
+                ].copy()
+
+        else:
+
+            category_df = master_df[
+                master_df["Final Category"]
+                == selected_category.upper()
+            ].copy()
         # =====================
         # Detect Template Column
         # =====================
