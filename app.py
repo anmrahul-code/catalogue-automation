@@ -206,11 +206,11 @@ if st.button("Generate Template"):
         st.success("Template Generated Successfully")
 
         st.download_button(
-            label="⬇ Download Template",
-            data=output,
-            file_name=f"{selected_category}_Template_Filled.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+    label="⬇ Download Template",
+    data=output,
+    file_name=f"{selected_marketplace}_{selected_category}_Template_Filled.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
 
     except Exception as e:
         st.error(f"Error: {str(e)}")
