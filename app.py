@@ -140,8 +140,7 @@ if st.button("Generate Template"):
 
 # Filter Category
 # =====================
-(
-if marketplace == "Flipkart" and "Gender" in master_df.columns:
+(if marketplace == "Flipkart" and "Gender" in master_df.columns:
     gender_series = (master_df["Gender"]
         .astype(str)
         .str.strip()
