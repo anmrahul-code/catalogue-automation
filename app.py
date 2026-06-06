@@ -109,8 +109,20 @@ if master_file and instruction_file and dropdown_file:
                 except:
                     pass
 
-            sheet_name = f"Mapping-{selected_category}"
+            sheet_name = f"Mapping-{selected_category}
 
+sheet_name = None
+
+for s in instruction_data.keys():
+    if s.replace("Mapping-", "").strip().upper() == selected_category.strip().upper():
+        sheet_name = s
+        break
+
+if sheet_name is None:
+    st.error(
+        f"Mapping sheet not found for category: {selected_category}"
+    )
+    st.stop()
             if sheet_name not in instruction_data:
                 st.error(
                     f"{sheet_name} sheet not found in Instruction File"
