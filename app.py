@@ -138,13 +138,52 @@ if st.button("Generate Template"):
                 except:
                     pass
 
-        # =====================
+               # =====================
         # Filter Category
         # =====================
+
         category_df = master_df[
             master_df["Final Category"]
             == selected_category.upper()
         ].copy()
+
+        # Flipkart Kids Tshirts Logic
+        if (
+            marketplace == "Flipkart"
+            and selected_category == "Kids Tshirts"
+            and "Gender" in master_df.columns
+        ):
+
+            category_df = master_df[
+                (master_df["Final Category"] == "TSHIRTS")
+                &
+                (
+                    master_df["Gender"]
+                    .astype(str)
+                    .str.strip()
+                    .str.upper()
+                    .isin(["BOYS", "GIRLS"])
+                )
+            ].copy()
+
+        # Flipkart Adult Tshirts Logic
+        elif (
+            marketplace == "Flipkart"
+            and selected_category == "Tshirts"
+            and "Gender" in master_df.columns
+        ):
+
+            category_df = master_df[
+                (master_df["Final Category"] == "TSHIRTS")
+                &
+                (
+                    master_df["Gender"]
+                    .astype(str)
+                    .str.strip()
+                    .str.upper()
+                    .isin(["MEN", "WOMEN"])
+                )
+            ].copy()
 
         # =====================
         # Detect Template Column
