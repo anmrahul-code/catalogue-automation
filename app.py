@@ -210,9 +210,10 @@ if st.button("Generate Template"):
                 row[template_column]
             ).strip()
 
-            if output_col == "" or output_col.lower() == "nan":
+                        if output_col == "" or output_col.lower() == "nan":
                 continue
-                        remarks = str(
+
+            remarks = str(
                 row.get("Remarks", "")
             ).strip().lower()
 
