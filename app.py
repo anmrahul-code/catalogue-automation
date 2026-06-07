@@ -215,38 +215,29 @@ if st.button("Generate Template"):
             remarks = str(row.get("Remarks", "")).strip().lower()
             if base_col in category_df.columns:
 
-                values = category_df[base_col].fillna("").astype(str)
+    values = category_df[base_col].fillna("").astype(str)
 
-                mapped_values = []
+    mapped_values = []
 
-                for val in values:
+    for val in values:
 
-                    lookup_value = selected_category
+        if "dropdown" in remarks:
 
-                    if base_col in [
-                        "Myntra Category",
-                        "Flipkart Category",
-                        "Ajio Category",
-                        "Final Category"
-                    ]:
-                        lookup_value = selected_category
+            key = (
+                selected_category.upper(),
+                output_col,
+                selected_category.lower()
+            )
 
-                    st.write(
-    selected_category.upper(),
-    output_col,
-    lookup_value.lower()
-)
-                    key = (
-                        selected_category.upper(),
-                        output_col,
-                        lookup_value.lower()
-                    )
+            mapped_values.append(
+                dropdown_dict.get(key, val)
+            )
 
-                    mapped_values.append(
-                        dropdown_dict.get(key, val)
-                    )
+        else:
 
-                output_df[output_col] = mapped_values
+            mapped_values.append(val)
+
+    output_df[output_col] = mapped_values
 
             else:
 
