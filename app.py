@@ -218,10 +218,8 @@ if st.button("Generate Template"):
                 mapped_values = []
 
              for val in values:
-
-    lookup_value = str(val).strip()
-
-    if base_col in [
+                 lookup_value = str(val).strip()
+                 if base_col in [
         "Myntra Category",
         "Flipkart Category",
         "Ajio Category",
