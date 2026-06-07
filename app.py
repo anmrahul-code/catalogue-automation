@@ -114,12 +114,14 @@ if st.button("Generate Template"):
         # =====================
         dropdown_dict = {}
 
-        required_columns = [
-            "Attribute",
-            "Base Value",
-            "Mapped Value",
-            "Final Category"
-        ]
+        category_field = f"{marketplace} Category"
+
+required_columns = [
+    "Attribute",
+    "Base Value",
+    "Mapped Value",
+    category_field
+]
 
         if all(col in dropdown_data.columns for col in required_columns):
 
@@ -128,10 +130,10 @@ if st.button("Generate Template"):
                 try:
 
                     key = (
-                        str(row["Final Category"]).strip().upper(),
-                        str(row["Attribute"]).strip(),
-                        str(row["Base Value"]).strip().lower()
-                    )
+    str(row[category_field]).strip().upper(),
+    str(row["Attribute"]).strip(),
+    str(row["Base Value"]).strip().lower()
+)
 
                     dropdown_dict[key] = row["Mapped Value"]
 
@@ -163,13 +165,15 @@ if st.button("Generate Template"):
             st.error(f"{category_col} column not found in Master File")
             st.stop()
 
-        category_df = master_df[
-            master_df[category_col]
-            .astype(str)
-            .str.strip()
-            .str.upper()
-            == selected_category.upper()
-        ].copy()
+        category_col = f"{marketplace} Category"
+
+category_df = master_df[
+    master_df[category_col]
+    .astype(str)
+    .str.strip()
+    .str.upper()
+    == selected_category.upper()
+].copy()
 
         # =====================
         # Detect Template Column
