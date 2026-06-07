@@ -112,7 +112,7 @@ if st.button("Generate Template"):
         # =====================
         # Create Dropdown Dictionary
         # =====================
-                dropdown_dict = {}
+        dropdown_dict = {}
 
         category_field = f"{marketplace} Category"
 
