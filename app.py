@@ -205,32 +205,43 @@ if st.button("Generate Template"):
             list(dropdown_dict.items())[:10]
         )
         # =====================
-        # Filter Category
-        # =====================
+# Filter Category
+# =====================
 
-        if "Final Category" not in master_df.columns:
+if "Final Category" not in master_df.columns:
 
-            st.error(
-                "Final Category column missing"
-            )
+    st.error(
+        "Final Category column missing in Master File"
+    )
 
-            st.stop()
+    st.stop()
 
-        category_df = master_df[
-            master_df["Final Category"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
-            ==
-            selected_category.upper()
-        ].copy()
+category_df = master_df[
+    master_df["Final Category"]
+    .astype(str)
+    .str.strip()
+    .str.upper()
+    ==
+    selected_category.upper()
+].copy()
 
-        st.write(
-            "Filtered Rows",
-            len(category_df)
-        )
-        st.write("Dropdown Dictionary Sample")
+st.write(
+    "Filtered Rows",
+    len(category_df)
+)
 
-        for k, v in list(dropdown_dict.items())[:10]:
+st.write(
+    "Selected Category"
+)
 
-            st.write(k, "=", v)
+st.write(
+    selected_category
+)
+
+if len(category_df) == 0:
+
+    st.error(
+        f"No records found for {selected_category}"
+    )
+
+    st.stop()
