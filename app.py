@@ -199,7 +199,8 @@ if st.button("Generate Template"):
         # Generate Output
         # =====================
         output_df = pd.DataFrame()
-                for _, row in instruction_df.iterrows():
+                
+        for _, row in instruction_df.iterrows():
 
             base_col = str(
                 row["Base file Column"]
