@@ -112,16 +112,16 @@ if st.button("Generate Template"):
         # =====================
         # Create Dropdown Dictionary
         # =====================
-        dropdown_dict = {}
+                dropdown_dict = {}
 
         category_field = f"{marketplace} Category"
 
-required_columns = [
-    "Attribute",
-    "Base Value",
-    "Mapped Value",
-    category_field
-]
+        required_columns = [
+            "Attribute",
+            "Base Value",
+            "Mapped Value",
+            category_field
+        ]
 
         if all(col in dropdown_data.columns for col in required_columns):
 
@@ -130,16 +130,15 @@ required_columns = [
                 try:
 
                     key = (
-    str(row[category_field]).strip().upper(),
-    str(row["Attribute"]).strip(),
-    str(row["Base Value"]).strip().lower()
-)
+                        str(row[category_field]).strip().upper(),
+                        str(row["Attribute"]).strip(),
+                        str(row["Base Value"]).strip().lower()
+                    )
 
                     dropdown_dict[key] = row["Mapped Value"]
 
                 except:
                     pass
-
         # =====================
         # Filter Category
         # =====================
