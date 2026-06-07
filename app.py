@@ -139,6 +139,8 @@ if st.button("Generate Template"):
 
                 except:
                     pass
+                    st.write("Sample Dropdown Keys")
+                    st.write(list(dropdown_dict.keys())[:10])
         # =====================
         # Filter Category
         # =====================
