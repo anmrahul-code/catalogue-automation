@@ -199,8 +199,7 @@ if st.button("Generate Template"):
         # Generate Output
         # =====================
         output_df = pd.DataFrame()
-
-        for _, row in instruction_df.iterrows():
+                for _, row in instruction_df.iterrows():
 
             base_col = str(
                 row["Base file Column"]
@@ -210,7 +209,7 @@ if st.button("Generate Template"):
                 row[template_column]
             ).strip()
 
-                        if output_col == "" or output_col.lower() == "nan":
+            if output_col == "" or output_col.lower() == "nan":
                 continue
 
             remarks = str(
@@ -248,7 +247,7 @@ if st.button("Generate Template"):
             else:
 
                 output_df[output_col] = ""
-        # =====================
+                # =====================
         # Create Excel File
         # =====================
         output = io.BytesIO()
