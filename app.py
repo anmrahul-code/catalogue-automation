@@ -229,3 +229,8 @@ if st.button("Generate Template"):
             "Filtered Rows",
             len(category_df)
         )
+        st.write("Dropdown Dictionary Sample")
+
+        for k, v in list(dropdown_dict.items())[:10]:
+
+            st.write(k, "=", v)
