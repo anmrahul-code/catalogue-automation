@@ -143,11 +143,17 @@ if st.button("Generate Template"):
 # Filter Category
 # =====================
 
-       if marketplace == "Myntra":category_col = "Myntra Category"
+       if marketplace == "Myntra"
 
-elif marketplace == "Flipkart":category_col = "Flipkart Category"
+:category_col = "Myntra Category"
 
-elif marketplace == "Ajio":category_col = "Ajio Category"
+elif marketplace == "Flipkart"
+
+:category_col = "Flipkart Category"
+
+elif marketplace == "Ajio"
+
+:category_col = "Ajio Category"
 
 else: category_col = "Final Category"
 
