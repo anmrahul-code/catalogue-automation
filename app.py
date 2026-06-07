@@ -52,4 +52,3 @@ except Exception as e:
             "Please upload Master File"
         )
                 st.stop()
-                try:
