@@ -164,9 +164,10 @@ if st.button("Generate Template"):
             st.error(f"{category_col} column not found in Master File")
             st.stop()
 
-        category_col = f"{marketplace} Category"
+        
 
-        category_df = master_df[master_df[category_col]
+        category_df = master_df[
+    master_df[category_col]
     .astype(str)
     .str.strip()
     .str.upper()
@@ -218,15 +219,25 @@ if st.button("Generate Template"):
 
                 for val in values:
 
-                    key = (
-                        selected_category.upper(),
-                        output_col,
-                        str(val).strip().lower()
-                    )
+    lookup_value = str(val).strip()
 
-                    mapped_values.append(
-                        dropdown_dict.get(key, val)
-                    )
+    if base_col in [
+        "Myntra Category",
+        "Flipkart Category",
+        "Ajio Category",
+        "Final Category"
+    ]:
+        lookup_value = selected_category
+
+    key = (
+        selected_category.upper(),
+        output_col,
+        lookup_value.lower()
+    )
+
+    mapped_values.append(
+        dropdown_dict.get(key, val)
+    )
 
                 output_df[output_col] = mapped_values
 
