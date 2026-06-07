@@ -253,7 +253,8 @@ for _, row in instruction_df.iterrows():
 # Direct Master Mapping
 # =====================
 
-elif (
+elif 
+(
     base_col != "None"
     and base_col in category_df.columns
 ):
