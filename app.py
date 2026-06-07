@@ -42,7 +42,9 @@ except Exception as e:
 
     st.error(str(e))
     st.stop()
-    selected_category = st.selectbox(
+
+
+selected_category = st.selectbox(
     "Select Category",
     categories
 )
