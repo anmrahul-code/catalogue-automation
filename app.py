@@ -219,7 +219,7 @@ if st.button("Generate Template"):
 
                 for val in values:
 
-                    lookup_value = str(val).strip()
+                    lookup_value = selected_category
 
                     if base_col in [
                         "Myntra Category",
