@@ -193,7 +193,7 @@ if st.button("Generate Template"):
             st.error("Template column not found in instruction file")
             st.stop()
 
-        # =====================
+               # =====================
         # Generate Output
         # =====================
         output_df = pd.DataFrame()
@@ -216,29 +216,34 @@ if st.button("Generate Template"):
                 values = category_df[base_col].fillna("").astype(str)
 
                 mapped_values = []
-                for val in values:
-                 lookup_value = str(val).strip()
-                 if base_col in [
-        "Myntra Category",
-        "Flipkart Category",
-        "Ajio Category",
-        "Final Category"
-    ]:
-        lookup_value = selected_category key = (
-        selected_category.upper(),
-        output_col,
-        lookup_value.lower()
-    )
 
-    mapped_values.append(
-        dropdown_dict.get(key, val)
-    )
+                for val in values:
+
+                    lookup_value = str(val).strip()
+
+                    if base_col in [
+                        "Myntra Category",
+                        "Flipkart Category",
+                        "Ajio Category",
+                        "Final Category"
+                    ]:
+                        lookup_value = selected_category
+
+                    key = (
+                        selected_category.upper(),
+                        output_col,
+                        lookup_value.lower()
+                    )
+
+                    mapped_values.append(
+                        dropdown_dict.get(key, val)
+                    )
 
                 output_df[output_col] = mapped_values
 
             else:
-                output_df[output_col] = ""
 
+                output_df[output_col] = ""
         # =====================
         # Create Excel File
         # =====================
