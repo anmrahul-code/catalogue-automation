@@ -48,8 +48,7 @@ except Exception as e:
 )
     if st.button("Generate Template"):
             if master_file is None:
-
-        st.warning(
+                st.warning(
             "Please upload Master File"
         )
 
