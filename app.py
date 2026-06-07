@@ -204,3 +204,67 @@ if st.button("Generate Template"):
         st.write(
             list(dropdown_dict.items())[:10]
         )
+# =====================
+# Generate Output
+# =====================
+
+output_df = pd.DataFrame()
+
+template_column = f"{marketplace} Template Column"
+
+for _, row in instruction_df.iterrows():
+
+    base_col = str(
+        row["Base file Column"]
+    ).strip()
+
+    output_col = str(
+        row[template_column]
+    ).strip()
+
+    remarks = str(
+        row.get("Remarks", "")
+    ).strip().lower()
+
+    if output_col == "" or output_col.lower() == "nan":
+        continue
+
+    # =====================
+    # Dropdown Values
+    # =====================
+
+    if "dropdown" in remarks:
+
+        key = (
+            output_col.upper(),
+            selected_category.upper()
+        )
+
+        mapped_value = dropdown_dict.get(
+            key,
+            ""
+        )
+
+        output_df[output_col] = [
+            mapped_value
+        ] * len(category_df)
+
+    # =====================
+    # Direct Master Mapping
+    # =====================
+
+    elif (
+        base_col != "None"
+        and base_col in category_df.columns
+    ):
+
+        output_df[output_col] = (
+            category_df[base_col]
+            .fillna("")
+            .astype(str)
+            .values
+        )
+
+    else:
+
+        output_df[output_col] = ""
