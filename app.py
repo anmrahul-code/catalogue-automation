@@ -51,6 +51,5 @@ except Exception as e:
                 st.warning(
             "Please upload Master File"
         )
-
-        st.stop()
-    try:
+                st.stop()
+                try:
