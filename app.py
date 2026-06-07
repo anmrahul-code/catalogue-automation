@@ -71,18 +71,53 @@ if st.button("Generate Template"):
         )
 
         # =====================
-        # Filter Category
-        # =====================
+# Filter Category
+# =====================
 
-        category_df = master_df[
-            master_df["Final Category"]
-            .astype(str)
-            .str.strip()
-            .str.upper()
-            ==
-            selected_category.upper()
-        ].copy()
+if "Final Category" not in master_df.columns:
 
+    st.error(
+        "Final Category column not found in Master File"
+    )
+    st.stop()
+
+master_df["Final Category"] = (
+    master_df["Final Category"]
+    .astype(str)
+    .str.strip()
+)
+
+category_df = master_df[
+    master_df["Final Category"]
+    ==
+    selected_category
+].copy()
+
+# DEBUG
+
+st.write(
+    "Selected Category",
+    selected_category
+)
+
+st.write(
+    "Master Categories",
+    master_df["Final Category"]
+    .dropna()
+    .unique()
+)
+
+st.write(
+    "Category Rows Found",
+    len(category_df)
+)
+
+if len(category_df) == 0:
+
+    st.error(
+        "No rows found for selected category"
+    )
+    st.stop()
         # =====================
         # Dropdown Dictionary
         # =====================
