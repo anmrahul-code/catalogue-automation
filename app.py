@@ -159,3 +159,48 @@ if st.button("Generate Template"):
         st.error(
             f"Error : {str(e)}"
         )
+        # =====================
+        # Create Dropdown Dictionary
+        # =====================
+
+        dropdown_dict = {}
+
+        required_columns = [
+            "Attribute",
+            "Base Value",
+            "Mapped Value"
+        ]
+
+        if all(
+            col in dropdown_df.columns
+            for col in required_columns
+        ):
+
+            for _, row in dropdown_df.iterrows():
+
+                try:
+
+                    key = (
+                        str(
+                            row["Attribute"]
+                        ).strip().upper(),
+
+                        str(
+                            row["Base Value"]
+                        ).strip().upper()
+                    )
+
+                    dropdown_dict[key] = (
+                        row["Mapped Value"]
+                    )
+
+                except:
+                    pass
+
+        st.write(
+            "Dropdown Dictionary Created"
+        )
+
+        st.write(
+            list(dropdown_dict.items())[:10]
+        )
