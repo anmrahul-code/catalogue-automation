@@ -114,6 +114,10 @@ if st.button("Generate Template"):
         # =====================
         dropdown_dict = {}
 
+        st.write("START DEBUG")
+        st.write(dropdown_data.columns.tolist())
+        st.stop()
+
         category_field = f"{marketplace} Category"
 
         required_columns = [
