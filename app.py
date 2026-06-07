@@ -212,32 +212,37 @@ if st.button("Generate Template"):
 
             if output_col == "" or output_col.lower() == "nan":
                 continue
-            remarks = str(row.get("Remarks", "")).strip().lower()
+                        remarks = str(
+                row.get("Remarks", "")
+            ).strip().lower()
+
             if base_col in category_df.columns:
 
-    values = category_df[base_col].fillna("").astype(str)
+                values = category_df[
+                    base_col
+                ].fillna("").astype(str)
 
-    mapped_values = []
+                mapped_values = []
 
-    for val in values:
+                for val in values:
 
-        if "dropdown" in remarks:
+                    if "dropdown" in remarks:
 
-            key = (
-                selected_category.upper(),
-                output_col,
-                selected_category.lower()
-            )
+                        key = (
+                            selected_category.upper(),
+                            output_col,
+                            selected_category.lower()
+                        )
 
-            mapped_values.append(
-                dropdown_dict.get(key, val)
-            )
+                        mapped_values.append(
+                            dropdown_dict.get(key, val)
+                        )
 
-        else:
+                    else:
 
-            mapped_values.append(val)
+                        mapped_values.append(val)
 
-    output_df[output_col] = mapped_values
+                output_df[output_col] = mapped_values
 
             else:
 
