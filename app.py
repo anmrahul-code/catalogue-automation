@@ -229,6 +229,11 @@ if st.button("Generate Template"):
                     ]:
                         lookup_value = selected_category
 
+                    st.write(
+    selected_category.upper(),
+    output_col,
+    lookup_value.lower()
+)
                     key = (
                         selected_category.upper(),
                         output_col,
