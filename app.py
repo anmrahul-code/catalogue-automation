@@ -216,8 +216,7 @@ if st.button("Generate Template"):
                 values = category_df[base_col].fillna("").astype(str)
 
                 mapped_values = []
-
-             for val in values:
+                for val in values:
                  lookup_value = str(val).strip()
                  if base_col in [
         "Myntra Category",
