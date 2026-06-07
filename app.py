@@ -249,22 +249,22 @@ for _, row in instruction_df.iterrows():
             mapped_value
         ] * len(category_df)
 
-    # =====================
-    # Direct Master Mapping
-    # =====================
+# =====================
+# Direct Master Mapping
+# =====================
 
-    elif (
-        base_col != "None"
-        and base_col in category_df.columns
-    ):
+elif (
+    base_col != "None"
+    and base_col in category_df.columns
+):
 
-        output_df[output_col] = (
-            category_df[base_col]
-            .fillna("")
-            .astype(str)
-            .values
-        )
+    output_df[output_col] = (
+        category_df[base_col]
+        .fillna("")
+        .astype(str)
+        .values
+    )
 
-    else:
+else:
 
-        output_df[output_col] = ""
+    output_df[output_col] = ""
