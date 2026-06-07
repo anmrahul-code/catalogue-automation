@@ -114,17 +114,11 @@ if st.button("Generate Template"):
         # =====================
         dropdown_dict = {}
 
-        st.write("START DEBUG")
-        st.write(dropdown_data.columns.tolist())
-        st.stop()
-
-        category_field = f"{marketplace} Category"
-
         required_columns = [
             "Attribute",
             "Base Value",
             "Mapped Value",
-            category_field
+            "Final Category"
         ]
 
         if all(col in dropdown_data.columns for col in required_columns):
@@ -134,7 +128,7 @@ if st.button("Generate Template"):
                 try:
 
                     key = (
-                        str(row[category_field]).strip().upper(),
+                        str(row["Final Category"]).strip().upper(),
                         str(row["Attribute"]).strip(),
                         str(row["Base Value"]).strip().lower()
                     )
@@ -143,48 +137,68 @@ if st.button("Generate Template"):
 
                 except:
                     pass
-                    st.write("Dropdown Columns")
-                    st.write(dropdown_data.columns.tolist())
 
-                    st.write("Sample Dropdown Data")
-                    st.write(dropdown_data.head())
-                    
-                    st.write("Sample Dropdown Keys")
-                    st.write(list(dropdown_dict.keys())[:20])
-        # =====================
+              # =====================
         # Filter Category
         # =====================
 
-        if marketplace == "Myntra":
+        # =====================
+# Filter Category
+# =====================
 
-            category_col = "Myntra Category"
+if marketplace == "Flipkart" and "Gender" in master_df.columns:
 
-        elif marketplace == "Flipkart":
+    gender_series = (
+        master_df["Gender"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
 
-            category_col = "Flipkart Category"
+    # Kids Tshirts = Boys + Girls
+    if selected_category == "Kids Tshirts":
 
-        elif marketplace == "Ajio":
+        category_df = master_df[
+            (master_df["Final Category"] == "TSHIRTS") &
+            (
+                gender_series.isin(
+                    ["BOYS", "GIRLS"]
+                )
+            )
+        ].copy()
 
-            category_col = "Ajio Category"
+    # Adult Tshirts = Men + Women
+    elif selected_category == "Tshirts":
+
+        category_df = master_df[
+            (master_df["Final Category"] == "TSHIRTS") &
+            (
+                gender_series.isin(
+                    ["MEN", "WOMEN"]
+                )
+            )
+        ].copy()
+
+    else:
+
+        category_df = master_df[
+            master_df["Final Category"]
+            == selected_category.upper()
+        ].copy()
+
+else:
+
+    category_df = master_df[
+        master_df["Final Category"]
+        == selected_category.upper()
+    ].copy()
 
         else:
 
-            category_col = "Final Category"
-
-        if category_col not in master_df.columns:
-
-            st.error(f"{category_col} column not found in Master File")
-            st.stop()
-
-        
-
-        category_df = master_df[
-    master_df[category_col]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-    == selected_category.upper()
-].copy()
+            category_df = master_df[
+                master_df["Final Category"]
+                == selected_category.upper()
+            ].copy()
 
         # =====================
         # Detect Template Column
@@ -205,11 +219,11 @@ if st.button("Generate Template"):
             st.error("Template column not found in instruction file")
             st.stop()
 
-               # =====================
+        # =====================
         # Generate Output
         # =====================
         output_df = pd.DataFrame()
-                
+
         for _, row in instruction_df.iterrows():
 
             base_col = str(
@@ -223,42 +237,30 @@ if st.button("Generate Template"):
             if output_col == "" or output_col.lower() == "nan":
                 continue
 
-            remarks = str(
-                row.get("Remarks", "")
-            ).strip().lower()
-
             if base_col in category_df.columns:
 
-                values = category_df[
-                    base_col
-                ].fillna("").astype(str)
+                values = category_df[base_col].fillna("").astype(str)
 
                 mapped_values = []
 
                 for val in values:
 
-                    if "dropdown" in remarks:
+                    key = (
+                        selected_category.upper(),
+                        output_col,
+                        str(val).strip().lower()
+                    )
 
-                        key = (
-                            selected_category.upper(),
-                            output_col,
-                            selected_category.lower()
-                        )
-
-                        mapped_values.append(
-                            dropdown_dict.get(key, val)
-                        )
-
-                    else:
-
-                        mapped_values.append(val)
+                    mapped_values.append(
+                        dropdown_dict.get(key, val)
+                    )
 
                 output_df[output_col] = mapped_values
 
             else:
-
                 output_df[output_col] = ""
-                # =====================
+
+        # =====================
         # Create Excel File
         # =====================
         output = io.BytesIO()
