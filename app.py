@@ -217,7 +217,7 @@ if st.button("Generate Template"):
 
                 mapped_values = []
 
-    for val in values:
+             for val in values:
 
     lookup_value = str(val).strip()
 
