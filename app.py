@@ -224,9 +224,7 @@ if st.button("Generate Template"):
         "Ajio Category",
         "Final Category"
     ]:
-        lookup_value = selected_category
-
-    key = (
+        lookup_value = selected_category key = (
         selected_category.upper(),
         output_col,
         lookup_value.lower()
