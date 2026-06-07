@@ -204,3 +204,28 @@ if st.button("Generate Template"):
         st.write(
             list(dropdown_dict.items())[:10]
         )
+        # =====================
+        # Filter Category
+        # =====================
+
+        if "Final Category" not in master_df.columns:
+
+            st.error(
+                "Final Category column missing"
+            )
+
+            st.stop()
+
+        category_df = master_df[
+            master_df["Final Category"]
+            .astype(str)
+            .str.strip()
+            .str.upper()
+            ==
+            selected_category.upper()
+        ].copy()
+
+        st.write(
+            "Filtered Rows",
+            len(category_df)
+        )
