@@ -212,7 +212,7 @@ if st.button("Generate Template"):
 
             if output_col == "" or output_col.lower() == "nan":
                 continue
-
+            remarks = str(row.get("Remarks", "")).strip().lower()
             if base_col in category_df.columns:
 
                 values = category_df[base_col].fillna("").astype(str)
