@@ -166,8 +166,7 @@ if st.button("Generate Template"):
 
         category_col = f"{marketplace} Category"
 
-    category_df = master_df[
-    master_df[category_col]
+    category_df = master_df[master_df[category_col]
     .astype(str)
     .str.strip()
     .str.upper()
