@@ -139,37 +139,51 @@ if st.button("Generate Template"):
                     pass
 
                # =====================
+        # Filter Category
         # =====================
-# Filter Category
-# =====================
 
-       if marketplace == "Myntra"
+        category_df = master_df[
+            master_df["Final Category"]
+            == selected_category.upper()
+        ].copy()
 
-:category_col = "Myntra Category"
+        # Flipkart Kids Tshirts Logic
+        if (
+            marketplace == "Flipkart"
+            and selected_category == "Kids Tshirts"
+            and "Gender" in master_df.columns
+        ):
 
-elif marketplace == "Flipkart"
+            category_df = master_df[
+                (master_df["Final Category"] == "TSHIRTS")
+                &
+                (
+                    master_df["Gender"]
+                    .astype(str)
+                    .str.strip()
+                    .str.upper()
+                    .isin(["BOYS", "GIRLS"])
+                )
+            ].copy()
 
-:category_col = "Flipkart Category"
+        # Flipkart Adult Tshirts Logic
+        elif (
+            marketplace == "Flipkart"
+            and selected_category == "Tshirts"
+            and "Gender" in master_df.columns
+        ):
 
-elif marketplace == "Ajio"
-
-:category_col = "Ajio Category"
-
-else: category_col = "Final Category"
-
-if category_col not in master_df.columns:
-
-    st.error(f"{category_col} column not found in Master File")
-    st.stop()
-
-category_df = master_df[
-    master_df[category_col]
-    .astype(str)
-    .str.strip()
-    .str.upper()
-    == selected_category.upper()
-].copy()
-       
+            category_df = master_df[
+                (master_df["Final Category"] == "TSHIRTS")
+                &
+                (
+                    master_df["Gender"]
+                    .astype(str)
+                    .str.strip()
+                    .str.upper()
+                    .isin(["MEN", "WOMEN"])
+                )
+            ].copy()
 
         # =====================
         # Detect Template Column
