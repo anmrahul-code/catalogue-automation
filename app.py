@@ -143,7 +143,7 @@ if st.button("Generate Template"):
 # Filter Category
 # =====================
 
-if marketplace == "Myntra":category_col = "Myntra Category"
+       if marketplace == "Myntra":category_col = "Myntra Category"
 
 elif marketplace == "Flipkart":category_col = "Flipkart Category"
 
