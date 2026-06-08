@@ -230,32 +230,24 @@ if st.button("Generate Template"):
 
             if "dropdown" in remarks:
 
-                lookup_value = ""
-
-                if (
-                    base_col in category_df.columns
-                    and len(category_df) > 0
-                ):
-
-                    lookup_value = str(
-                        category_df.iloc[0][base_col]
-                    ).strip()
+                lookup_value = selected_category
 
                 key = (
                     output_col.upper(),
                     lookup_value.upper()
                 )
 
-                mapped_value = dropdown_dict.get(
-                    key,
+                    mapped_value = dropdown_dict.get(
+                        key,
                     ""
+                        )
+
+            output_df[output_col] = (
+                [mapped_value]
+                * len(category_df)
                 )
 
-                output_df[output_col] = (
-                    [mapped_value]
-                    * len(category_df)
-                )
-
+               
             # ==================================
             # Blank Column
             # ==================================
