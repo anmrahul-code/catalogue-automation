@@ -2,10 +2,6 @@ import streamlit as st
 import pandas as pd
 import io
 
-# ==================================
-# Page Setup
-# ==================================
-
 st.set_page_config(
     page_title="Catalogue Automation Portal",
     layout="wide"
@@ -28,23 +24,14 @@ master_file = st.file_uploader(
 
 marketplace = st.selectbox(
     "Select Marketplace",
-    [
-        "Flipkart",
-        "Myntra",
-        "Ajio"
-    ]
+    ["Flipkart", "Myntra", "Ajio"]
 )
 
-instruction_file = (
-    f"config/{marketplace}_instruction.xlsx"
-)
-
-dropdown_file = (
-    f"config/{marketplace}_dropdown.xlsx"
-)
+instruction_file = f"config/{marketplace}_instruction.xlsx"
+dropdown_file = f"config/{marketplace}_dropdown.xlsx"
 
 # ==================================
-# Load Categories
+# Categories
 # ==================================
 
 try:
@@ -61,9 +48,7 @@ try:
 
 except Exception as e:
 
-    st.error(
-        f"Instruction File Error: {e}"
-    )
+    st.error(str(e))
     st.stop()
 
 selected_category = st.selectbox(
@@ -72,7 +57,7 @@ selected_category = st.selectbox(
 )
 
 # ==================================
-# Generate Template
+# Generate
 # ==================================
 
 if st.button("Generate Template"):
@@ -86,9 +71,9 @@ if st.button("Generate Template"):
 
     try:
 
-        # ==================================
+        # ----------------------------
         # Load Files
-        # ==================================
+        # ----------------------------
 
         master_df = pd.read_excel(
             master_file
@@ -104,20 +89,13 @@ if st.button("Generate Template"):
             sheet_name=f"Dropdown-{selected_category}"
         )
 
-        # ==================================
-        # Category Filter
-        # ==================================
+        # ----------------------------
+        # Filter Category
+        # ----------------------------
 
         category_column = (
             f"{marketplace} Category"
         )
-
-        if category_column not in master_df.columns:
-
-            st.error(
-                f"{category_column} not found in Master File"
-            )
-            st.stop()
 
         category_df = master_df[
             master_df[category_column]
@@ -134,66 +112,77 @@ if st.button("Generate Template"):
             )
             st.stop()
 
-        # ==================================
+        # ----------------------------
         # Template Column
-        # ==================================
+        # ----------------------------
 
-        template_column = (
-            f"{marketplace} Template Column"
-        )
+        template_column = None
 
-        if template_column not in instruction_df.columns:
+        possible_columns = [
+            f"{marketplace} Template Column",
+            "Myntra Template Column"
+        ]
+
+        for col in possible_columns:
+
+            if col in instruction_df.columns:
+
+                template_column = col
+                break
+
+        if template_column is None:
 
             st.error(
-                f"{template_column} not found"
+                "Template column not found"
             )
             st.stop()
 
-        # ==================================
+        # ----------------------------
         # Dropdown Dictionary
-        # ==================================
+        # ----------------------------
 
         dropdown_dict = {}
 
-        required_cols = [
-            "Attribute",
-            "Base Value",
-            "Mapped Value"
-        ]
+        for _, row in dropdown_df.iterrows():
 
-        if all(
-            col in dropdown_df.columns
-            for col in required_cols
-        ):
+            try:
 
-            for _, row in dropdown_df.iterrows():
+                key = (
+                    str(row["Attribute"])
+                    .strip()
+                    .upper(),
 
-                try:
+                    str(row["Base Value"])
+                    .strip()
+                    .upper()
+                )
 
-                    key = (
-                        str(
-                            row["Attribute"]
-                        ).strip().upper(),
+                dropdown_dict[key] = (
+                    str(row["Mapped Value"])
+                    .strip()
+                )
 
-                        str(
-                            row["Base Value"]
-                        ).strip().upper()
-                    )
+            except:
+                pass
 
-                    dropdown_dict[key] = (
-                        str(
-                            row["Mapped Value"]
-                        ).strip()
-                    )
-
-                except:
-                    pass
-
-        # ==================================
-        # Generate Output
-        # ==================================
+        # ----------------------------
+        # Output
+        # ----------------------------
 
         output_df = pd.DataFrame()
+
+        category_based_fields = [
+            "Listing Status",
+            "Fullfilment by",
+            "Procurement type",
+            "Procurement SLA (DAY)",
+            "Shipping provider",
+            "Local handling fee (INR)",
+            "Zonal handling fee (INR)",
+            "National handling fee (INR)",
+            "Country Of Origin",
+            "Tax Code"
+        ]
 
         for _, row in instruction_df.iterrows():
 
@@ -224,47 +213,84 @@ if st.button("Generate Template"):
             ):
                 continue
 
-            # ==================================
-            # Dropdown Mapping
-            # ==================================
+            # ----------------------------
+            # Dropdown
+            # ----------------------------
 
             if "dropdown" in remarks:
 
-                lookup_value = selected_category
+                if output_col in category_based_fields:
 
-                key = (
-                    output_col.upper(),
-                    lookup_value.upper()
-                )
+                    key = (
+                        output_col.upper(),
+                        selected_category.upper()
+                    )
 
-                    mapped_value = dropdown_dict.get(
-                        key,
-                    ""
+                    mapped_value = (
+                        dropdown_dict.get(
+                            key,
+                            ""
+                        )
+                    )
+
+                    output_df[output_col] = (
+                        [mapped_value]
+                        * len(category_df)
+                    )
+
+                else:
+
+                    mapped_values = []
+
+                    if base_col in category_df.columns:
+
+                        values = (
+                            category_df[base_col]
+                            .fillna("")
+                            .astype(str)
                         )
 
-            output_df[output_col] = (
-                [mapped_value]
-                * len(category_df)
-                )
+                        for val in values:
 
-               
-            # ==================================
+                            key = (
+                                output_col.upper(),
+                                val.strip().upper()
+                            )
+
+                            mapped_values.append(
+                                dropdown_dict.get(
+                                    key,
+                                    val
+                                )
+                            )
+
+                        output_df[output_col] = (
+                            mapped_values
+                        )
+
+                    else:
+
+                        output_df[output_col] = (
+                            [""] * len(category_df)
+                        )
+
+            # ----------------------------
             # Blank Column
-            # ==================================
+            # ----------------------------
 
             elif (
                 base_col == ""
                 or base_col.lower() == "none"
-                or base_col == "nan"
+                or base_col.lower() == "nan"
             ):
 
                 output_df[output_col] = (
                     [""] * len(category_df)
                 )
 
-            # ==================================
+            # ----------------------------
             # Direct Mapping
-            # ==================================
+            # ----------------------------
 
             elif base_col in category_df.columns:
 
@@ -275,9 +301,9 @@ if st.button("Generate Template"):
                     .values
                 )
 
-            # ==================================
+            # ----------------------------
             # Default Blank
-            # ==================================
+            # ----------------------------
 
             else:
 
@@ -285,31 +311,9 @@ if st.button("Generate Template"):
                     [""] * len(category_df)
                 )
 
-        # ==================================
-        # Debug
-        # ==================================
-
-        st.success(
-            "Template Generated Successfully"
-        )
-
-        st.write(
-            "Output Rows",
-            len(output_df)
-        )
-
-        st.write(
-            "Output Columns",
-            len(output_df.columns)
-        )
-
-        st.dataframe(
-            output_df.head()
-        )
-
-        # ==================================
-        # Excel Download
-        # ==================================
+        # ----------------------------
+        # Download
+        # ----------------------------
 
         output = io.BytesIO()
 
@@ -325,10 +329,18 @@ if st.button("Generate Template"):
 
         output.seek(0)
 
+        st.success(
+            "Template Generated Successfully"
+        )
+
+        st.dataframe(
+            output_df.head()
+        )
+
         st.download_button(
             label="⬇ Download Template",
             data=output,
-            file_name=f"{marketplace}_{selected_category}_Template.xlsx",
+            file_name=f"{marketplace}_{selected_category}.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
