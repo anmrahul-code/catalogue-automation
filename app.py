@@ -24,7 +24,7 @@ master_file = st.file_uploader(
 
 marketplace = st.selectbox(
     "Select Marketplace",
-    ["Flipkart", "Myntra", "Ajio", "Amazon"]
+    ["Flipkart", "Myntra", "Ajio", "Amazon", "Nykaa"]
 )
 
 instruction_file = f"config/{marketplace}_instruction.xlsx"
